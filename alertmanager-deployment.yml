@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: sre
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: alertmanager
+        image: prom/alertmanager:v0.21.0
+        args:
+          - '--config.file=alertmanager.yml'
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/alertmanager/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: alertmanager-config
+
+
+# I tried to load alertmanager.yml separately because combine.yml was never giving
+# a proper authentication for the email alerts, but it's too complicated,
+# so I give up on the email alerts for now.

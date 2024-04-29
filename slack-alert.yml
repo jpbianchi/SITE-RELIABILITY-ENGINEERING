@@ -1,0 +1,15 @@
+    global:
+      resolve_timeout: 1m
+      slack_api_url: 'https://hooks.slack.com/services/${SLACK_API_URL}'
+      # WARNING: anyone with this url can send messages to the slack channel - do not commit this file
+      # Webhooks can be turned OFF at api.slack.com/apps/<app ID>/incoming-webhooks
+    receivers:
+    - name: 'slack-notifications'
+      slack_configs:
+      - channel: '#tests' # must be an existing Slack Channel
+        send_resolved: true
+    route:
+      group_interval: 5m
+      group_wait: 10s
+      receiver: 'slack-notifications'
+      repeat_interval: 1h

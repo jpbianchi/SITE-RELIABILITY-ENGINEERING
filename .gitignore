@@ -1,0 +1,14 @@
+venv/
+.env
+alertmanager*/
+w2/
+w3/
+w4/
+.DS_Store
+alertmanager*.tar.gz
+all commands.md
+
+smtp*.py
+
+grep*
+

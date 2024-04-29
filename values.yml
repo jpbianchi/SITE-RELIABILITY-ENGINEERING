@@ -1,0 +1,48 @@
+global:
+  resolve_timeout: 5m
+
+alertmanager_spec:
+  # Increase or decrease based on your needs
+  route:
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 1h
+    receiver: "default-receiver"  # Use a default receiver (replace with actual name)
+
+
+alerting_rules:
+  - alert: NodeDown
+    expr: node_unreachable > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Node Down - {{ $labels.node }}"
+      description: "Node {{ $labels.node }} is unreachable. Investigate immediately."
+
+  - alert: LowMemoryAlert
+    expr: node_memory_MemFree_bytes < 100Mi
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Low Memory on Node - {{ $labels.node }}"
+      description: "Node {{ $labels.node }} has low memory available (less than 100Mi). Investigate resource usage."
+
+  - alert: HighCPUUsage
+    expr: node_cpu_usage > 0.2
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High CPU Usage Detected on {{ $labels.node }}"
+      description: "Pod(s) on node {{ $labels.node }} are experiencing high CPU usage (>80%). Investigate immediately."
+
+  - alert: HighHTTPErrorRate
+    expr: rate(http_request_total{status="5xx"}[5m]) > 0.1
+    for: 15m
+    labels:
+      severity: error
+    annotations:
+      summary: "High HTTP Error Rate Detected - {{ $labels.job }}"
+      description: "The application '{{ $labels.job }}' is experiencing a high rate of HTTP 5xx errors ({{ expr | round(2) }} errors per second over the last 5 minutes). Investigate the cause of the errors."

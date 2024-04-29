@@ -1,0 +1,34 @@
+
+global:
+  resolve_timeout: 1m
+
+receivers:
+  - name: 'notifications'
+    email_configs:
+      - to: 'xxx@gmail.com'
+        from: 'xxx@xxx.com ' 
+        smarthost: 'mail.smtp2go.com:2525'
+        auth_username: 'xxx_smtp@smtp2go.com'
+        auth_identity: 'xxx_smtp@smtp2go.com'
+        auth_password: 'xxx'
+        send_resolved: true
+        require_tls: false
+        headers:
+          subject: "Prometheus - Alert"
+          text: "{{ range .Alerts }} Hi, \n{{ .Annotations.summary }}\n{{ .Annotations.description }} {{end}}"
+
+    slack_configs:
+      - channel: '#upcommerce-devs'
+        send_resolved: true
+        api_url: 'https://hooks.slack.com/services/TxxxZ/B06SWxxxT/UkdfxxxnMc'
+
+route:
+  group_wait: 10s
+  group_interval: 2m
+  receiver: 'notifications'
+  repeat_interval: 2m
+
+
+# I tried to load alertmanager.yml separately because combine.yml was never giving
+# a proper authentication for the email alerts, but it's too complicated,
+# so I give up on the email alerts for now.

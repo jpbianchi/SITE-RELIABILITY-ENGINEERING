@@ -1,0 +1,32 @@
+# This file is used to deploy the local image to the Kubernetes cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upcommerce-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upcommerce-app
+  template:
+    metadata:
+      labels:
+        app: upcommerce-app
+    spec:
+      containers:
+        - name: upcommerce
+          image: upcommerce:v3  # the local image built from the Dockerfile
+          ports:
+            - containerPort: 5000
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: "1"  
+              memory: "4Gi"
+
+# to create the docker image inside minikube, first run
+# eval $(minikube docker-env)  # it will use the docker daemon inside minikube
+# then create the image as if you were using the docker daemon in your local machine
+# docker build -t upcommerce:v3 .  
+# the image is now inside minikube, and we can reference it in the deployment_local_image.yml file as if it were in a docker registry
+# kubectl apply -f deployment_local_image.yml -n sre

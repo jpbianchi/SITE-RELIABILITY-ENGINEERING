@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Website - Products</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <img src="../static/logo.png" alt="Company Logo" class="logo">
+        <h1>Welcome, {{ username }}</h1>
+        <a href="/logout">Logout</a>
+        <div class="products">
+            <div class="product">
+                <img src="../static/product1.jpg" alt="Galaxy S23">
+                <h2>Galaxy S23</h2>
+                <p>$19.99</p>
+                <button onclick="addToCart('Galaxy S23')">Add to Cart</button>
+            </div>
+            <div class="product">
+                <img src="../static/product2.jpg" alt="Galaxy S21">
+                <h2>Galaxy S21</h2>
+                <p>$29.99</p>
+                <button onclick="addToCart('Galaxy S21')">Add to Cart</button>
+            </div>
+            <div class="product">
+                <img src="../static/product3.jpg" alt="iPhone 13">
+                <h2>iPhone 13</h2>
+                <p>$39.99</p>
+                <button onclick="addToCart('iPhone 13')">Add to Cart</button>
+            </div>
+        </div>
+        <div id="cart">
+            <h2>Shopping Cart</h2>
+            <ul id="cart-items"></ul>
+            <p>Total: $<span id="cart-total">0.00</span></p>
+            <div class="buttons-container">
+                <button onclick="clearCart()">Clear Cart</button>
+                <button onclick="redirectToPurchase()">Pay Now</button>
+            </div>
+        </div>
+    </div>
+    <script src="../static/script.js"></script>
+</body>
+</html>

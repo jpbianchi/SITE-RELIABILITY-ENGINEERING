@@ -1,0 +1,72 @@
+USER-SUPPLIED VALUES:
+serverFiles:
+  alerting_rules.yml:
+    groups:
+    - name: NodeDown
+      rules:
+      - alert: InstanceDown
+        annotations:
+          description: Node {{ $labels.kubernetes_io_hostname }} has been down for
+            more than 5 minutes.
+          host: '{{ $labels.kubernetes_io_hostname }}'
+          summary: Instance down
+        expr: up{job="kubernetes-nodes"} == 0
+        for: 5m
+        labels:
+          severity: page
+    - name: low_memory_alert
+      rules:
+      - alert: LowMemory
+        annotations:
+          description: '{{ $labels.kubernetes_node }} node is low on memory. Only
+            {{ $value }}% left'
+          host: '{{ $labels.kubernetes_node }}'
+          summary: '{{ $labels.kubernetes_node }} Host is low on memory. Only {{ $value
+            }}% left'
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100
+          < 85
+        for: 2m
+        labels:
+          severity: warning
+      - alert: KubePersistentVolumeErrors
+        annotations:
+          description: The persistent volume {{ $labels.persistentvolume }} has status
+            {{ $labels.phase }}.
+          summary: PersistentVolume is having issues with provisioning.
+        expr: kube_persistentvolume_status_phase{job="kubernetes-service-endpoints",phase=~"Failed|Pending"}
+          > 0
+        for: 2m
+        labels:
+          severity: critical
+      - alert: KubePodCrashLooping
+        annotations:
+          description: Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container
+            }}) is restarting {{ printf "%.2f" $value }} times / 5 minutes.
+          summary: Pod is crash looping.
+        expr: rate(kube_pod_container_status_restarts_total{job="kubernetes-service-endpoints",namespace=~".*"}[5m])
+          * 60 * 5 > 0
+        for: 2m
+        labels:
+          severity: warning
+      - alert: KubePodNotReady
+        annotations:
+          description: Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a
+            non-ready state for longer than 5 minutes.
+          summary: Pod has been in a non-ready state for more than 2 minutes.
+        expr: sum by(namespace, pod) (max by(namespace, pod) (kube_pod_status_phase{job="kubernetes-service-endpoints",namespace=~".*",phase=~"Pending|Unknown"})
+          * on(namespace, pod) group_left(owner_kind) topk by(namespace, pod) (1,
+          max by(namespace, pod, owner_kind) (kube_pod_owner{owner_kind!="Job"})))
+          > 0
+        for: 2m
+        labels:
+          severity: warning
+          
+    - name: test
+      rules:
+      - alert: TestAlert
+        expr: vector(1)
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "This is a test alert"

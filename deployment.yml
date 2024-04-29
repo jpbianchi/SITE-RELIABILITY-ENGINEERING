@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upcommerce-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upcommerce-app
+  template:
+    metadata:
+      labels:
+        app: upcommerce-app
+    spec:
+      containers:
+        - name: upcommerce
+          image: uonyeka/upcommerce:v3  # the image built with Dockerfile and uploaded on dockerhub
+          ports:
+            - containerPort: 5000
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "1"
+              memory: "4Gi"
+
